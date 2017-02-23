@@ -1,0 +1,23 @@
+import os
+from cgtscons import SONLIB_LIB_NAME
+from cgtscons.depends import *
+
+# clone to avoid modifying parent enviroment
+Import("env",)
+env = env.Clone()
+
+inclDirs = ["c/lz4", "c/quicktree/include", "c/sonlib/include"]
+env.Append(CPPPATH = inclDirs)
+
+# only compile a subset of quicktree
+quicktreeSrcs = [os.path.join("c/quicktree/src", f)
+                  for f in ("align.c", "cluster.c", "distancemat.c",
+                            "distancemat_merops.c", "options.c", "sequence.c",
+                            "tree.c", "util.c")]
+lz4Srcs = ["c/lz4/lz4.c", "c/lz4/lz4hc.c"]
+sonLibSrcs = Glob("c/sonlib/src/*.c") + Glob("sonlib/src/*.cpp")
+
+env.StaticLibrary(target = SONLIB_LIB_NAME,
+                  source = quicktreeSrcs + lz4Srcs + sonLibSrcs)
+
+libAddKyotoDatabase(env)
