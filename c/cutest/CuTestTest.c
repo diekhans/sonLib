@@ -213,7 +213,7 @@ void TestCuAssertPtrEquals_Failure(CuTest* tc)
 	CuTestInit(&tc2, "MyTest", TestPasses);
 
 	/* test failing case */
-	sprintf(expected_message, "expected pointer <0x%p> but was <0x%p>", nullPtr, &x);
+	sprintf(expected_message, "expected pointer <0x%p> but was <0x%p>", (void*)nullPtr, (void*)&x);
 	CuAssertPtrEquals(&tc2, NULL, &x);
 	CuAssertTrue(tc, tc2.failed);
 	CompareAsserts(tc, "CuAssertPtrEquals failed", expected_message, tc2.message);
@@ -223,11 +223,12 @@ void TestCuAssertPtrNotNull_Success(CuTest* tc)
 {
 	CuTest tc2;
 	int x;
+        int* xp = &x;
 
 	CuTestInit(&tc2, "MyTest", TestPasses);
 
 	/* test success case */
-	CuAssertPtrNotNull(&tc2, &x);
+	CuAssertPtrNotNull(&tc2, xp);
 	CuAssertTrue(tc, ! tc2.failed);
 	CuAssertTrue(tc, NULL == tc2.message);
 }

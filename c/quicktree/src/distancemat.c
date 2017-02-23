@@ -88,8 +88,8 @@ void calc_DistanceMatrix( struct DistanceMatrix *mat,
 
   unsigned int i, j, k, table_index, num_undefined_distances, mem_increment;
   unsigned int *columnlist;
-  float residuecount, distance, max_observed_distance;
-  float **undefined_distances;
+  Distance residuecount, distance, max_observed_distance;
+  Distance **undefined_distances;
 
   columnlist = (unsigned int *) malloc_util( aln->length * sizeof(unsigned int));
   for (i=0; i < aln->length; i++) {
@@ -140,13 +140,13 @@ void calc_DistanceMatrix( struct DistanceMatrix *mat,
 	distance = -1.0;
 	if (num_undefined_distances % mem_increment == 0) {
 	  if (num_undefined_distances == 0) {
-	    undefined_distances = (float **) 
-	      malloc_util( sizeof( float *) * mem_increment);
+	    undefined_distances = (Distance **) 
+	      malloc_util( sizeof( Distance *) * mem_increment);
 	  }
 	  else {
-	    undefined_distances = (float **) 
+	    undefined_distances = (Distance **) 
 	      realloc_util( undefined_distances, 
-			    (num_undefined_distances + mem_increment) * sizeof(float *));
+			    (num_undefined_distances + mem_increment) * sizeof(Distance *));
 	  }
 	}
 	undefined_distances[num_undefined_distances++] = &(mat->data[i][j]);
@@ -155,7 +155,7 @@ void calc_DistanceMatrix( struct DistanceMatrix *mat,
       }
 
       /* Use Kimura's formula to convert percentage dissimilarity to a distance */
-      /*
+      
       if (use_kimura) {
 	if ( distance < 0.75) {
 	  if (distance > 0.0) 
@@ -167,21 +167,11 @@ void calc_DistanceMatrix( struct DistanceMatrix *mat,
 	  }
 	  else {
 	    table_index = (int) ((distance*1000.0) - 750.0);
-	    distance = (float) dayhoff_pams[ table_index ];
+	    distance = (Distance) dayhoff_pams[ table_index ];
 	    distance /= 100.0;
 	  }
 	}
       }
-      */
-      /********** for merops **********/
-      if (distance > 0.83) 
-	distance = 10.0;
-      else {
-	distance = log (1.0 - (distance / 0.83)) * -83.0;
-	distance /= 100.0;
-      }
-      /********************************/
-
       if (distance > max_observed_distance) {
 	max_observed_distance = distance;
       }
@@ -254,10 +244,10 @@ struct DistanceMatrix *empty_DistanceMatrix( unsigned int size) {
 
   mat = (struct DistanceMatrix *) malloc_util(sizeof(struct DistanceMatrix));
   mat->size = size;
-  mat->data = (float **) malloc_util( mat->size * sizeof(float *) );
+  mat->data = (Distance **) malloc_util( mat->size * sizeof(Distance *) );
 
   for( i=0; i < mat->size; i++)
-    mat->data[i] = (float *) malloc_util( (i+1) * sizeof(float) );
+    mat->data[i] = (Distance *) malloc_util( (i+1) * sizeof(Distance) );
  
   return mat;
 }
@@ -311,7 +301,7 @@ void *free_DistanceMatrix( struct DistanceMatrix *mat ) {
    cost of a function call for each lookup (is this wise...?)
  **********************************************************************/
 
-float index_DistanceMatrix( struct DistanceMatrix *mat, 
+Distance index_DistanceMatrix( struct DistanceMatrix *mat, 
 			     unsigned int i, 
 			     unsigned int j) {
   if (i > j) 
@@ -379,10 +369,10 @@ struct DistanceMatrix *read_phylip_DistanceMatrix( FILE *handle, struct Alignmen
   struct DistanceMatrix *mat;
   unsigned int size, i, j;
   char identifier[11];
-  float dist;
+  double dist;
 
   /* The size of the matrix will be on the first line on its own */
-  if (! fscanf( handle, "%d", &size ))
+  if (! fscanf( handle, "%ud", &size ))
     fatal_util( "Parse error: The first line should contain the size of matrix");
 
   *aln_loc = (struct Alignment *) malloc_util( sizeof(struct Alignment )); 
@@ -398,15 +388,15 @@ struct DistanceMatrix *read_phylip_DistanceMatrix( FILE *handle, struct Alignmen
     /* The name should be exactly 10 chars, and the scanf should place a \0
        at the end, making 11 */
     fscanf( handle, "%s", identifier );
-    /* Right; the rest of the line will consist of exactly 'size; floating
+    /* Right; the rest of the line will consist of exactly 'size' floating
        point numbers */
     (*aln_loc)->seqs[i] = empty_Sequence();
     (*aln_loc)->seqs[i]->name = (char *) malloc_util( 11 * sizeof(char));
     strcpy( (*aln_loc)->seqs[i]->name, identifier );
     for (j=0; j  < size; j++) {
-      fscanf( handle, "%f", &dist);
+      fscanf( handle, "%lf", &dist);
       if (j <= i) 
-	mat->data[i][j] = dist;
+	mat->data[i][j] = (Distance) dist;
     }
   } 
 

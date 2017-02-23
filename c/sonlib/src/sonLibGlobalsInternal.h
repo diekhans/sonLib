@@ -29,7 +29,6 @@
 #include <math.h>
 #include <inttypes.h>
 
-#include "CuTest.h"
 #include "sonLib.h"
 #include "sonLibListPrivate.h"
 

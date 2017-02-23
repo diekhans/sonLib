@@ -1,7 +1,3 @@
-bin/*
-lib/*
-bin/
-lib/
 *.pyc
-*.o
-*.a
+*.depend
+.emacs.bak
