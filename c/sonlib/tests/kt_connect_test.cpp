@@ -1,6 +1,8 @@
 // test function for increment, bulk operations
 
 //Database functions
+#include <sys/types.h>
+#include <unistd.h>
 #include <ktremotedb.h>
 #include <kclangc.h>
 
