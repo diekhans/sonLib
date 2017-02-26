@@ -50,7 +50,7 @@ def main():
     suite = allSuites()
     runner = unittest.TextTestRunner()
     i = runner.run(suite)
-    return len(i.failures) + len(i.errors)
+    return 0 if (len(i.failures) + len(i.errors)) == 0 else 1
         
 if __name__ == '__main__':
     import sys
