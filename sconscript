@@ -1,5 +1,5 @@
 import os
-from cgtscons import SONLIB_LIB_NAME, CUTEST_LIB_NAME, TEST_BIN_DIR, objectPathsBuild
+from cgtscons import SONLIB_LIB_NAME, CUTEST_LIB_NAME, TEST_BIN_DIR, objectPathsBuild, envRelSymlink
 from cgtscons.depends import libAddSonLib, libAddCuTest, libAddKyotoDatabase
 
 # clone to avoid modifying parent enviroment
@@ -72,3 +72,7 @@ linkTestProg(ktEnv, "sonLib_kt_connect_test", ["kt_connect_test.cpp"])
 linkTestProg(env, "sonLib_kvDatabaseTest", ["kvDatabaseTest.c", "kvDatabaseTestCommon.c"])
 
 
+###
+# python code
+###
+envRelSymlink(env, "#/mods/sonLib/py/cgt/sonLib", "./lib/py/cgt/sonLib")
