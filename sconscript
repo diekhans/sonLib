@@ -1,5 +1,6 @@
 import os
-from cgtscons import SONLIB_LIB_NAME, CUTEST_LIB_NAME, TEST_BIN_DIR, objectPathsBuild, envRelSymlink
+from cgtscons import SONLIB_LIB_NAME, CUTEST_LIB_NAME, TEST_BIN_DIR, RUN_DIR
+from cgtscons import buildStaticLibrary, linkTestProg, envRelSymlink
 from cgtscons.depends import libAddSonLib, libAddCuTest, libAddKyotoDatabase
 
 # clone to avoid modifying parent enviroment
@@ -7,7 +8,7 @@ Import("env",)
 env = env.Clone()
 
 inclDirs = ["c/lz4", "c/quicktree/include", "c/sonlib/include"]
-env.Append(CPPPATH = inclDirs)
+env.Append(CPPPATH=inclDirs)
 
 ##
 # sonlib
@@ -19,18 +20,13 @@ quicktreeSrcs = [os.path.join("c/quicktree/src", f)
                            "tree.c", "buildtree.c", "util.c")]
 lz4Srcs = ["c/lz4/lz4.c", "c/lz4/lz4hc.c"]
 sonLibSrcs = Glob("c/sonlib/src/*.c") + Glob("sonlib/src/*.cpp")
-
-env.StaticLibrary(target="lib" + SONLIB_LIB_NAME,
-                  source=objectPathsBuild(env, SONLIB_LIB_NAME,
-                                          sonLibSrcs + quicktreeSrcs + lz4Srcs))
+buildStaticLibrary(env, SONLIB_LIB_NAME, sonLibSrcs + quicktreeSrcs + lz4Srcs)
 
 ##
 # cutest
 ##
-cutestSrcs = ["c/cutest/CuTest", "c/cutest/CuTestTest"]
-env.StaticLibrary(target="lib" + CUTEST_LIB_NAME,
-                  source=objectPathsBuild(env, CUTEST_LIB_NAME, cutestSrcs))
-
+cutestSrcs = ["c/cutest/CuTest.c", "c/cutest/CuTestTest.c"]
+buildStaticLibrary(env, CUTEST_LIB_NAME, cutestSrcs)
 
 libAddSonLib(env)
 libAddCuTest(env)
@@ -40,39 +36,38 @@ libAddKyotoDatabase(env)
 ktEnv = env.Clone()
 ktEnv.Append(CXXFLAGS=["-fpermissive"])
 
-# test programs
 testSrcDir = "c/sonlib/tests"
-def linkTestProg(env, progName, srcFiles):
-    srcPaths = [os.path.join(testSrcDir, sf) for sf in srcFiles]
-    env.Program(target=os.path.join(TEST_BIN_DIR, progName),
-                source=objectPathsBuild(env, "sonLibTests", srcPaths))
-
-linkTestProg(env, "sonLib_Tests", ["allTests.c", "sonLibAlignTest.c",
-                                   "sonLibCommonTest.c",
-                                   "sonLibCompressionTest.c",
-                                   "sonLibConnectivityTests.c",
-                                   "sonLibDoubleTuplesTest.c",
-                                   "sonLibEdgeContainerTests.c",
-                                   "sonLibEulerTest.c", "sonLibExceptTest.c",
-                                   "sonLibFileTest.c", "sonLibGraphTest.c",
-                                   "sonLibHashTest.c",
-                                   "sonLibIntTuplesTest.c",
-                                   "sonLibListTest.c",
-                                   "sonLibPosetAlignmentTest.c",
-                                   "sonLibRandomTest.c", "sonLibSetTest.c",
-                                   "sonLibSortedSetTest.c",
-                                   "sonLibStringTest.c", "sonLibTreapTest.c",
-                                   "sonLibTreeTest.c", "sonLibTuplesTest.c",
-                                   "stMatrixTest.c", "stPhylogenyTest.c",
-                                   "stThreadPoolTest.c", "stUnionFindTest.c",
-                                   "sonLibCacheTest.c"])
-linkTestProg(env, "sonLib_cigarsTest", ["cigarsTest.c"])
-linkTestProg(env, "sonLib_fastaCTest", ["fastaCTest.c"])
-linkTestProg(ktEnv, "sonLib_kt_connect_test", ["kt_connect_test.cpp"])
-linkTestProg(env, "sonLib_kvDatabaseTest", ["kvDatabaseTest.c", "kvDatabaseTestCommon.c"])
+linkTestProg(env, "sonLib_Tests", testSrcDir,
+             ["allTests.c", "sonLibAlignTest.c", "sonLibCommonTest.c",
+              "sonLibCompressionTest.c", "sonLibConnectivityTests.c",
+              "sonLibDoubleTuplesTest.c", "sonLibEdgeContainerTests.c",
+              "sonLibEulerTest.c", "sonLibExceptTest.c", "sonLibFileTest.c",
+              "sonLibGraphTest.c", "sonLibHashTest.c",
+              "sonLibIntTuplesTest.c", "sonLibListTest.c",
+              "sonLibPosetAlignmentTest.c", "sonLibRandomTest.c",
+              "sonLibSetTest.c", "sonLibSortedSetTest.c",
+              "sonLibStringTest.c", "sonLibTreapTest.c", "sonLibTreeTest.c",
+              "sonLibTuplesTest.c", "stMatrixTest.c", "stPhylogenyTest.c",
+              "stThreadPoolTest.c", "stUnionFindTest.c", "sonLibCacheTest.c"])
+linkTestProg(env, "sonLib_cigarsTest", testSrcDir,
+             ["cigarsTest.c"])
+linkTestProg(env, "sonLib_fastaCTest", testSrcDir,
+             ["fastaCTest.c"])
+linkTestProg(ktEnv, "sonLib_kt_connect_test", testSrcDir,
+             ["kt_connect_test.cpp"])
+linkTestProg(env, "sonLib_kvDatabaseTest", testSrcDir,
+             ["kvDatabaseTest.c", "kvDatabaseTestCommon.c"])
 
 
 ###
 # python code
 ###
 envRelSymlink(env, "#/mods/sonLib/py/cgt/sonLib", "./lib/py/cgt/sonLib")
+# FIXME: env.SymLink("./lib/py/cgt/sonLib", "#/mods/sonLib/py/cgt/sonLib")
+
+
+##
+# install in final location
+##
+env.Install(RUN_DIR, "c/sonlib/include")
+env.Install(RUN_DIR, "./lib")
