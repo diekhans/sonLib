@@ -2,7 +2,7 @@
 #include "sonLib.h"
 #include "stCheckEdges.h"
 #include "stPerfectMatching.h"
-#include "shared.h"
+#include "nodeEdgeFuncs.h"
 #include "stMatchingAlgorithms.h"
 
 ////////////////////////////////////

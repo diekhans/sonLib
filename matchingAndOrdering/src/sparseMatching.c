@@ -1,6 +1,6 @@
 #include "sonLib.h"
 #include "stCheckEdges.h"
-#include "shared.h"
+#include "nodeEdgeFuncs.h"
 #include "stMatchingAlgorithms.h"
 
 static stHash *rebaseNodes(stSortedSet *nodes) {

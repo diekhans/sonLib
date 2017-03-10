@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "commonC.h"
 #include "sonLib.h"
-#include "shared.h"
+#include "nodeEdgeFuncs.h"
 
 const char *MATCHING_EXCEPTION = "MATCHING_EXCEPTION";
 

@@ -1,5 +1,5 @@
 #include "sonLib.h"
-#include "shared.h"
+#include "nodeEdgeFuncs.h"
 
 void checkEdges(stList *edges, stSortedSet * nodes, bool coversAllNodes,
         bool isClique) {

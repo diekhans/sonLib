@@ -2,7 +2,7 @@
 #include "stSparseMatching.h"
 #include "stCheckEdges.h"
 #include "stMatchingAlgorithms.h"
-#include "shared.h"
+#include "nodeEdgeFuncs.h"
 
 static void makeMatchingPerfect(stList *chosenEdges, stList *adjacencyEdges,
         stSortedSet *nodes) {
