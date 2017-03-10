@@ -16,7 +16,9 @@
 	#ifdef _MSC_VER
 		#define PM_TIMER_MSVC
 	#else
-		#define PM_TIMER_CLOCK_GETTIME
+               /* UCSC: default was PM_TIMER_CLOCK_GETTIME, however getrusage
+                * is on every system we care about */
+               #define PM_TIMER_GETRUSAGE
 	#endif
 #endif
 
