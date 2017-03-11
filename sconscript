@@ -12,7 +12,7 @@ env = env.Clone()
 # sonlib
 ##
 slEnv = env.Clone()
-slPublicIncludeDirs = ("sonlib/include", "sonLib/cutest",
+slPublicIncludeDirs = ("sonlib/include", "cutest",
                        "matchingAndOrdering/include", "pinchesAndCacti/include",
                        "threeEdgeConnected/include")
 copyBuildInclude(slEnv, globInclude(slEnv, slPublicIncludeDirs))
