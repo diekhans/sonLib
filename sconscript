@@ -9,15 +9,12 @@ env = env.Clone()
 # compile.  Programs are compiled against public includes.
 
 ##
-# sonlib
+# sonLib
 ##
 slEnv = env.Clone()
-slPublicIncludeDirs = ("sonlib/include", "cutest",
+slPublicIncludeDirs = ("sonLib/include", "cutest",
                        "matchingAndOrdering/include", "pinchesAndCacti/include",
                        "threeEdgeConnected/include")
-copyBuildInclude(slEnv, globInclude(slEnv, slPublicIncludeDirs))
-
-                 
 slEnv.Append(CPPPATH=("lz4", "quicktree/include") + slPublicIncludeDirs)
 quicktreeSrcs = [os.path.join("quicktree/src", f) for f in 
                  ("align.c", "cluster.c", "distancemat.c",
@@ -27,7 +24,7 @@ lz4Srcs = ["lz4/lz4.c", "lz4/lz4hc.c"]
 threeEdgeSrcs = ["threeEdgeConnected/src/3_Absorb3edge2x.c"]
 matchOrderSrcs = Glob("matchingAndOrdering/src/*.c")
 pinchesSrcs = Glob("pinchesAndCacti/src/*.c")
-sonLibSrcs = Glob("sonlib/src/*.c") + Glob("sonlib/src/*.cpp")
+sonLibSrcs = Glob("sonLib/src/*.c") + Glob("sonLib/src/*.cpp")
 buildStaticLibrary(slEnv, SONLIB_LIB_NAME,
                    sonLibSrcs + quicktreeSrcs + lz4Srcs + threeEdgeSrcs + matchOrderSrcs + pinchesSrcs)
 
@@ -38,7 +35,7 @@ cutestSrcs = ["cutest/CuTest.c", "cutest/CuTestTest.c"]
 buildStaticLibrary(slEnv, CUTEST_LIB_NAME, cutestSrcs)
 
 ##
-# sonlib tests
+# sonLib tests
 ##
 slTestEnv = slEnv.Clone()
 libAddSonLib(slTestEnv)
@@ -46,9 +43,10 @@ libAddCuTest(slTestEnv)
 libAddKyotoDatabase(slTestEnv)
 
 # these are compiled separately, exclude from glob of unit tests
+# FIXME: would it be better to 
 nonUnitTests = ("kt_connect_test.cpp", "cigarsTest.c", "fastaCTest.c",
                 "kvDatabaseTest.c", "kvDatabaseTestCommon.c")
-testSrcDir = "sonlib/tests"
+testSrcDir = "sonLib/tests"
 linkTestProg(slTestEnv, "sonLib_Tests",
              globSrcPaths(slTestEnv, testSrcDir, "*.c", excludes=nonUnitTests))
 linkTestProg(slTestEnv, "sonLib_cigarsTest",
@@ -81,10 +79,3 @@ linkProg(env, "blossum5",
 ###
 #envRelSymlink(env, "#/mods/sonLib/py/cgt/sonLib", "./lib/py/cgt/sonLib")
 # FIXME: env.SymLink("./lib/py/cgt/sonLib", "#/mods/sonLib/py/cgt/sonLib")
-
-
-##
-# install in final location
-##
-#env.Install(RUN_DIR, "sonlib/include")
-#env.Install(RUN_DIR, "./lib")
