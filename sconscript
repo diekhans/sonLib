@@ -4,20 +4,15 @@ from cgtscons import *
 # clone to avoid modifying parent enviroment
 Import("env",)
 env = env.Clone()
-
-# Environments are cloned to contain includes that are only used for that
-# compile.  Programs are compiled against public includes.
+libAddSonLib(env)
+libAddCuTest(env)
+libAddKyotoDatabase(env)
 
 ##
 # sonLib
 ##
 slEnv = env.Clone()
-slPublicIncludeDirs = ("sonLib/include", "cutest",
-                       "matchingAndOrdering/include", "pinchesAndCacti/include",
-                       "threeEdgeConnected/include")
-makeIncludesDepends(env, globInclude(env, slPublicIncludeDirs))
-
-slEnv.Append(CPPPATH=("lz4", "quicktree/include") + (outputIncludeDir(env),))
+slEnv.Append(CPPPATH=("lz4", "quicktree/include"))
 quicktreeSrcs = [os.path.join("quicktree/src", f) for f in 
                  ("align.c", "cluster.c", "distancemat.c",
                   "distancemat_merops.c", "options.c", "sequence.c",
@@ -39,27 +34,24 @@ buildStaticLibrary(slEnv, CUTEST_LIB_NAME, cutestSrcs)
 ##
 # sonLib tests
 ##
-slTestEnv = slEnv.Clone()
-libAddSonLib(slTestEnv)
-libAddCuTest(slTestEnv)
-libAddKyotoDatabase(slTestEnv)
+env = slEnv.Clone()
 
 # these are compiled separately, exclude from glob of unit tests
-# FIXME: would it be better to 
+# FIXME: would it be better to just list?
 nonUnitTests = ("kt_connect_test.cpp", "cigarsTest.c", "fastaCTest.c",
                 "kvDatabaseTest.c", "kvDatabaseTestCommon.c")
 testSrcDir = "sonLib/tests"
-linkTestProg(slTestEnv, "sonLib_Tests",
-             globSrcPaths(slTestEnv, testSrcDir, "*.c", excludes=nonUnitTests))
-linkTestProg(slTestEnv, "sonLib_cigarsTest",
+linkTestProg(env, "sonLib_Tests",
+             globSrcPaths(env, testSrcDir, "*.c", excludes=nonUnitTests))
+linkTestProg(env, "sonLib_cigarsTest",
              getSrcPaths(testSrcDir, ["cigarsTest.c"]))
-linkTestProg(slTestEnv, "sonLib_fastaCTest",
+linkTestProg(env, "sonLib_fastaCTest",
              getSrcPaths(testSrcDir, ["fastaCTest.c"]))
-linkTestProg(slTestEnv, "threeEdgeConnectedTests",
-             globSrcPaths(slTestEnv, "threeEdgeConnected/tests", "*.c"))
+linkTestProg(env, "threeEdgeConnectedTests",
+             globSrcPaths(env, "threeEdgeConnected/tests", "*.c"))
 
 # need special flags for anything including kyoto typhoon, etc headers
-slKtTestEnv = slTestEnv.Clone()
+slKtTestEnv = env.Clone()
 slKtTestEnv.Append(CXXFLAGS=["-fpermissive", "-Wno-overflow", "-Wno-unused-but-set-variable",
                              "-Wno-conversion-null", "-Wno-narrowing"])
 linkTestProg(slKtTestEnv, "sonLib_kt_connect_test",
