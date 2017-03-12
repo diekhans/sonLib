@@ -15,7 +15,9 @@ slEnv = env.Clone()
 slPublicIncludeDirs = ("sonLib/include", "cutest",
                        "matchingAndOrdering/include", "pinchesAndCacti/include",
                        "threeEdgeConnected/include")
-slEnv.Append(CPPPATH=("lz4", "quicktree/include") + slPublicIncludeDirs)
+makeIncludesDepends(env, globInclude(env, slPublicIncludeDirs))
+
+slEnv.Append(CPPPATH=("lz4", "quicktree/include") + (outputIncludeDir(env),))
 quicktreeSrcs = [os.path.join("quicktree/src", f) for f in 
                  ("align.c", "cluster.c", "distancemat.c",
                   "distancemat_merops.c", "options.c", "sequence.c",
