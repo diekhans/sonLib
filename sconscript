@@ -24,6 +24,8 @@ pinchesSrcs = Glob("pinchesAndCacti/src/*.c")
 sonLibSrcs = Glob("sonLib/src/*.c") + Glob("sonLib/src/*.cpp")
 buildStaticLibrary(slEnv, SONLIB_LIB_NAME,
                    sonLibSrcs + quicktreeSrcs + lz4Srcs + threeEdgeSrcs + matchOrderSrcs + pinchesSrcs)
+installPyProgs(env, "matchGraph/bin", ["matchGraph.py"])
+
 
 ##
 # cutest
@@ -63,4 +65,5 @@ linkTestDir(slKtTestEnv, "sonLib_kvDatabaseTest", "sonLib/tests", ["kvDatabaseTe
 blEnv = env.Clone()
 blEnv.Append(CXXFLAGS=["-fpermissive"])
 linkProg(env, "blossum5",
-         Glob("blossom/*.cpp") + Glob("blossom/GEOM/*.cpp") + Glob("blossom/MinCost/*.cpp"))
+         Glob("blossom/src/*.cpp") + Glob("blossom/src/GEOM/*.cpp") + Glob("blossom/src/MinCost/*.cpp"))
+installPyProgs(env, "blossom/bin", ["blossom_randGraph.py"])
