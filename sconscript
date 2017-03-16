@@ -13,18 +13,20 @@ libAddKyotoDatabase(env)
 ##
 slEnv = env.Clone()
 slEnv.Append(CPPPATH=["lz4", "quicktree/include"])
-quicktreeSrcs = [os.path.join("quicktree/src", f) for f in 
-                 ["align.c", "cluster.c", "distancemat.c",
-                  "distancemat_merops.c", "options.c", "sequence.c",
-                  "tree.c", "buildtree.c", "util.c"]]
-lz4Srcs = ["lz4/lz4.c", "lz4/lz4hc.c"]
-threeEdgeSrcs = ["threeEdgeConnected/src/3_Absorb3edge2x.c"]
+quicktreeSrcs = getSrcPaths("quicktree/src",
+                            ["align.c", "cluster.c", "distancemat.c",
+                             "distancemat_merops.c", "options.c", "sequence.c",
+                             "tree.c", "buildtree.c", "util.c"])
+lz4Srcs = getSrcPaths("lz4",
+                      ["lz4.c", "lz4hc.c"])
+threeEdgeSrcs = getSrcPaths("threeEdgeConnected/src",
+                            ["3_Absorb3edge2x.c"])
 matchOrderSrcs = Glob("matchingAndOrdering/src/*.c")
 pinchesSrcs = Glob("pinchesAndCacti/src/*.c")
 sonLibSrcs = Glob("sonLib/src/*.c") + Glob("sonLib/src/*.cpp")
 buildStaticLibrary(slEnv, SONLIB_LIB_NAME,
                    sonLibSrcs + quicktreeSrcs + lz4Srcs + threeEdgeSrcs + matchOrderSrcs + pinchesSrcs)
-installPyProgs(env, "matchGraph/bin", ["matchGraph.py"])
+installPyProgs(env, ["matchGraph/bin/matchGraph.py"])
 
 
 ##
@@ -36,28 +38,35 @@ buildStaticLibrary(slEnv, CUTEST_LIB_NAME, cutestSrcs)
 ##
 # sonLib tests
 ##
-linkTestDir(env, "sonLibTests", "sonLib/tests", 
-            ["allTests.c", "sonLibAlignTest.c", "sonLibCacheTest.c",
-             "sonLibCommonTest.c", "sonLibCompressionTest.c", "sonLibConnectivityTests.c",
-             "sonLibDoubleTuplesTest.c", "sonLibEdgeContainerTests.c", "sonLibEulerTest.c",
-             "sonLibExceptTest.c", "sonLibFileTest.c", "sonLibGraphTest.c",
-             "sonLibHashTest.c", "sonLibIntTuplesTest.c", "sonLibListTest.c",
-             "sonLibPosetAlignmentTest.c", "sonLibRandomTest.c", "sonLibSetTest.c",
-             "sonLibSortedSetTest.c", "sonLibStringTest.c", "sonLibTreapTest.c",
-             "sonLibTreeTest.c", "sonLibTuplesTest.c", "stMatrixTest.c",
-             "stPhylogenyTest.c", "stThreadPoolTest.c", "stUnionFindTest.c"])
-linkTestDir(env, "sonLib_cigarsTest", "sonLib/tests", ["cigarsTest.c"])
-linkTestDir(env, "sonLib_fastaCTest", "sonLib/tests", ["fastaCTest.c"])
-linkTestDir(env, "threeEdgeConnectedTests", "threeEdgeConnected/tests",
-            ["3_Absorb3edge2xTest.c", "allTests.c"])
+linkTest(env, "sonLibTests",
+         getSrcPaths("sonLib/tests", ["allTests.c",
+                                      "sonLibAlignTest.c", "sonLibCacheTest.c", "sonLibCommonTest.c",
+                                      "sonLibCompressionTest.c", "sonLibConnectivityTests.c",
+                                      "sonLibDoubleTuplesTest.c", "sonLibEdgeContainerTests.c",
+                                      "sonLibEulerTest.c", "sonLibExceptTest.c", "sonLibFileTest.c",
+                                      "sonLibGraphTest.c", "sonLibHashTest.c", "sonLibIntTuplesTest.c",
+                                      "sonLibListTest.c", "sonLibPosetAlignmentTest.c",
+                                      "sonLibRandomTest.c", "sonLibSetTest.c", "sonLibSortedSetTest.c",
+                                      "sonLibStringTest.c", "sonLibTreapTest.c", "sonLibTreeTest.c",
+                                      "sonLibTuplesTest.c", "stMatrixTest.c", "stPhylogenyTest.c",
+                                      "stThreadPoolTest.c", "stUnionFindTest.c"]))
+linkTest(env, "sonLib_cigarsTest",
+         getSrcPaths("sonLib/tests", ["cigarsTest.c"]))
+linkTest(env, "sonLib_fastaCTest",
+         getSrcPaths("sonLib/tests", ["fastaCTest.c"]))
+linkTest(env, "threeEdgeConnectedTests",
+         getSrcPaths("threeEdgeConnected/tests",
+                     ["3_Absorb3edge2xTest.c", "allTests.c"]))
 
 
 # need special flags for anything including kyoto typhoon, etc headers
 slKtTestEnv = env.Clone()
 slKtTestEnv.Append(CXXFLAGS=["-fpermissive", "-Wno-overflow", "-Wno-unused-but-set-variable",
                              "-Wno-conversion-null", "-Wno-narrowing"])
-linkTestDir(slKtTestEnv, "sonLib_kt_connect_test", "sonLib/tests", ["kt_connect_test.cpp"])
-linkTestDir(slKtTestEnv, "sonLib_kvDatabaseTest", "sonLib/tests", ["kvDatabaseTest.c", "kvDatabaseTestCommon.c"])
+linkTest(slKtTestEnv, "sonLib_kt_connect_test",
+         getSrcPaths("sonLib/tests", ["kt_connect_test.cpp"]))
+linkTest(slKtTestEnv, "sonLib_kvDatabaseTest",
+         getSrcPaths("sonLib/tests", ["kvDatabaseTest.c", "kvDatabaseTestCommon.c"]))
 
 ##
 # blossom5 program
@@ -66,4 +75,4 @@ blEnv = env.Clone()
 blEnv.Append(CXXFLAGS=["-fpermissive"])
 linkProg(env, "blossum5",
          Glob("blossom/src/*.cpp") + Glob("blossom/src/GEOM/*.cpp") + Glob("blossom/src/MinCost/*.cpp"))
-installPyProgs(env, "blossom/bin", ["blossom_randGraph.py"])
+installPyProgs(env, ["blossom/bin/blossom_randGraph.py"])
