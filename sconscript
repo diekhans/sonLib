@@ -26,7 +26,7 @@ pinchesSrcs = Glob("pinchesAndCacti/src/*.c")
 sonLibSrcs = Glob("sonLib/src/*.c") + Glob("sonLib/src/*.cpp")
 buildStaticLibrary(slEnv, SONLIB_LIB_NAME,
                    sonLibSrcs + quicktreeSrcs + lz4Srcs + threeEdgeSrcs + matchOrderSrcs + pinchesSrcs)
-installPyProgs(env, ["matchGraph/bin/matchGraph.py"])
+installPyProgs(env, "matchGraph/bin/matchGraph.py")
 
 
 ##
@@ -51,9 +51,9 @@ linkTest(env, "sonLibTests",
                                       "sonLibTuplesTest.c", "stMatrixTest.c", "stPhylogenyTest.c",
                                       "stThreadPoolTest.c", "stUnionFindTest.c"]))
 linkTest(env, "sonLib_cigarsTest",
-         getSrcPaths("sonLib/tests", ["cigarsTest.c"]))
+         getSrcPaths("sonLib/tests", "cigarsTest.c"))
 linkTest(env, "sonLib_fastaCTest",
-         getSrcPaths("sonLib/tests", ["fastaCTest.c"]))
+         getSrcPaths("sonLib/tests", "fastaCTest.c"))
 linkTest(env, "threeEdgeConnectedTests",
          getSrcPaths("threeEdgeConnected/tests",
                      ["3_Absorb3edge2xTest.c", "allTests.c"]))
@@ -64,7 +64,7 @@ slKtTestEnv = env.Clone()
 slKtTestEnv.Append(CXXFLAGS=["-fpermissive", "-Wno-overflow", "-Wno-unused-but-set-variable",
                              "-Wno-conversion-null", "-Wno-narrowing"])
 linkTest(slKtTestEnv, "sonLib_kt_connect_test",
-         getSrcPaths("sonLib/tests", ["kt_connect_test.cpp"]))
+         getSrcPaths("sonLib/tests", "kt_connect_test.cpp"))
 linkTest(slKtTestEnv, "sonLib_kvDatabaseTest",
          getSrcPaths("sonLib/tests", ["kvDatabaseTest.c", "kvDatabaseTestCommon.c"]))
 
@@ -75,4 +75,4 @@ blEnv = env.Clone()
 blEnv.Append(CXXFLAGS=["-fpermissive"])
 linkProg(env, "blossum5",
          Glob("blossom/src/*.cpp") + Glob("blossom/src/GEOM/*.cpp") + Glob("blossom/src/MinCost/*.cpp"))
-installPyProgs(env, ["blossom/bin/blossom_randGraph.py"])
+installPyProgs(env, "blossom/bin/blossom_randGraph.py")
